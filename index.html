@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 LED Control</title>
+</head>
+<body>
 
+  <h2>ESP32 LED Control Panel</h2>
+
+  <button onclick="turnOn()">Turn ON</button>
+  <button onclick="turnOff()">Turn OFF</button>
+
+  <script type="module">
+
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD44wSAYMH0I2urLs4ZurMzJtmsURG6KAc",
+      authDomain: "project-workshop-1a440.firebaseapp.com",
+      databaseURL: "https://project-workshop-1a440-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "project-workshop-1a440",
+      storageBucket: "project-workshop-1a440.firebasestorage.app",
+      messagingSenderId: "651706152037",
+      appId: "1:651706152037:web:b0e58fdfb03d232a62428c"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    // Functions to control LED
+    window.turnOn = function () {
+      set(ref(database, "LED"), "ON");
+      console.log("LED turned ON");
+    };
+
+    window.turnOff = function () {
+      set(ref(database, "LED"), "OFF");
+      console.log("LED turned OFF");
+    };
+
+  </script>
+
+</body>
+</html>
