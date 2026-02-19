@@ -1,22 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ESP32 LED Control</title>
+  <title>ESP32 Smart LED Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      width: 320px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .led-indicator {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin: 20px auto;
+      background: gray;
+      box-shadow: 0 0 10px gray;
+      transition: 0.3s;
+    }
+
+    .on {
+      background: #00ff88;
+      box-shadow: 0 0 20px #00ff88;
+    }
+
+    .off {
+      background: red;
+      box-shadow: 0 0 20px red;
+    }
+
+    button {
+      padding: 12px 25px;
+      margin: 10px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-on {
+      background: #00ff88;
+      color: black;
+    }
+
+    .btn-on:hover {
+      transform: scale(1.1);
+    }
+
+    .btn-off {
+      background: red;
+      color: white;
+    }
+
+    .btn-off:hover {
+      transform: scale(1.1);
+    }
+
+  </style>
 </head>
 <body>
 
-  <h2>ESP32 LED Control Panel</h2>
+  <div class="card">
+    <h2>ESP32 Smart LED</h2>
 
-  <button onclick="turnOn()">Turn ON</button>
-  <button onclick="turnOff()">Turn OFF</button>
+    <div id="ledStatus" class="led-indicator off"></div>
+
+    <button class="btn-on" onclick="turnOn()">Turn ON</button>
+    <button class="btn-off" onclick="turnOff()">Turn OFF</button>
+  </div>
 
   <script type="module">
 
-    // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Your Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyD44wSAYMH0I2urLs4ZurMzJtmsURG6KAc",
       authDomain: "project-workshop-1a440.firebaseapp.com",
@@ -27,20 +106,31 @@
       appId: "1:651706152037:web:b0e58fdfb03d232a62428c"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-    // Functions to control LED
+    const ledRef = ref(database, "LED");
+    const ledIndicator = document.getElementById("ledStatus");
+
     window.turnOn = function () {
-      set(ref(database, "LED"), "ON");
-      console.log("LED turned ON");
+      set(ledRef, "ON");
     };
 
     window.turnOff = function () {
-      set(ref(database, "LED"), "OFF");
-      console.log("LED turned OFF");
+      set(ledRef, "OFF");
     };
+
+    // Real-time LED status update
+    onValue(ledRef, (snapshot) => {
+      const status = snapshot.val();
+      if (status === "ON") {
+        ledIndicator.classList.remove("off");
+        ledIndicator.classList.add("on");
+      } else {
+        ledIndicator.classList.remove("on");
+        ledIndicator.classList.add("off");
+      }
+    });
 
   </script>
 
